@@ -300,7 +300,6 @@ int ispisIzDatoteke(pozicija p, char* ime_dat)
     char ime[MAX] = { 0 };
     char prezime[MAX] = { 0 };
     int godinaRodenja = 0;
-    int i = 0;
     pozicija q = NULL;
     FILE* file = NULL;
 
