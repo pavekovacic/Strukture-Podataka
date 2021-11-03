@@ -4,6 +4,8 @@
 #include<stdlib.h>
 #include <string.h>
 
+#define MAX 1024
+
 struct _osoba;
 typedef struct _osoba* pozicija;
 
@@ -24,6 +26,8 @@ pozicija pronadiPrezime(pozicija, char*);
 pozicija pronadiPrethodni(pozicija, char*);
 int brisanjeIzListe(pozicija, char*);
 int sortiraj(pozicija);
+int upisUDatoteku(pozicija, char*);
+int ispisIzDatoteke(pozicija, char*);
 
 int main()
 {
@@ -32,12 +36,12 @@ int main()
     head->next = NULL;
 
     int x, y = 0;
-    char prezime[30];
+    char prezime[30], ime_dat[30] = { 0 };
 
     do {
-        printf("Odaberi broj:\n1 - unos\n2 - ispis liste\n"
-            "3 - pronadi po prezimenu\n4 - brisanje iz liste\n"
-            "5 - sortiraj po prezimenima\n0 - kraj\n\n");
+        printf("Odaberi broj:\n1 - unos\n2 - ispis liste\n3 - pronadi po prezimenu\n"
+            "4 - brisanje iz liste\n5 - sortiraj po prezimenima\n6 - upis u datoteku\n"
+            "7 - ispis iz datoteke\n0 - kraj\n\n");
         scanf("%d", &x);
 
         switch (x)
@@ -90,6 +94,16 @@ int main()
         case 5:
             sortiraj(head);
             printf("\nLista je sortirana.\n");
+            break;
+        case 6:
+            printf("\nU koju datoteku zelite upisati podatke iz liste: ");
+            scanf(" %s", ime_dat);
+            upisUDatoteku(head->next, ime_dat);
+            break;
+        case 7:
+            printf("\nIz koje datoteke zelite ispisati podatke: ");
+            scanf(" %s", ime_dat);
+            ispisIzDatoteke(head, ime_dat);
             break;
         default:
             if (x != 0)
@@ -255,6 +269,71 @@ int sortiraj(pozicija p)
         }
         kraj = q;
     }
+    return 0;
+}
+
+int upisUDatoteku(pozicija p, char* ime_dat)
+{
+    FILE* file = NULL;
+    file = fopen(ime_dat, "w");
+
+    if (file == NULL) {
+        printf("Greska!\n");
+        return 0;
+    }
+
+    while (p != NULL) {
+        fprintf(file, "%s %s %d\n", p->ime, p->prezime, p->godinaRodenja);
+        p = p->next;
+    }
+
+    printf("\nPodaci su upisani u datoteku.\n");
+
+    fclose(file);
+
+    return 0;
+}
+
+int ispisIzDatoteke(pozicija p, char* ime_dat)
+{
+    char buffer[MAX] = { 0 };
+    char ime[MAX] = { 0 };
+    char prezime[MAX] = { 0 };
+    int godinaRodenja = 0;
+    int i = 0;
+    pozicija q = NULL;
+    FILE* file = NULL;
+
+    file = fopen(ime_dat, "r");
+    if (file == NULL) {
+        printf("Greska!\n");
+        return 0;
+    }
+
+    while (!feof(file))
+    {
+        fgets(buffer, MAX, file);
+        if (sscanf(buffer, "%s %s %d", ime, prezime, &godinaRodenja) == 3)
+        {
+            q = (pozicija)malloc(sizeof(osoba));
+            if (q == NULL) {
+                printf("Greska!");
+                return 0;
+            }
+
+            strcpy(q->ime, ime);
+            strcpy(q->prezime, prezime);
+            q->godinaRodenja = godinaRodenja;
+
+            q->next = p->next;
+            p->next = q;
+        }
+        strcpy(buffer, "");
+    }
+
+    printf("\nPodaci su ispisani iz datoteke u listu.\n");
+    fclose(file);
+
     return 0;
 }
 
