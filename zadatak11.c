@@ -24,9 +24,6 @@ typedef struct _list {
 	listPosition next;
 }list;
 
-struct _hashT;
-
-
 void createHashTable(list hashTable[]);
 int openFile(list hashTable[]);
 int hash(char* imeDrzave);
